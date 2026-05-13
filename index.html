@@ -82,17 +82,37 @@ body {
 .phone {
   width: var(--shell-w);
   min-height: var(--screen-min-h);
+  height: auto;
   background: var(--rose-0);
   border-radius: var(--shell-r);
   border: 1.5px solid var(--rose-2);
-  overflow: hidden;
+  overflow: hidden; /* mantiene border-radius visual en desktop */
   position: relative;
   box-shadow:
     0 0 0 6px rgba(255,240,245,0.6),
     0 24px 80px rgba(160,60,90,0.22),
     inset 0 1px 0 rgba(255,255,255,0.9);
 }
-/* Leopard texture overlay — very subtle */
+/* En desktop/tablet — las pantallas con mucho contenido scrollean dentro del phone */
+.screen {
+  display:none;
+  flex-direction:column;
+  min-height: var(--screen-min-h);
+  height: auto;
+  max-height: none;
+}
+.screen.active { display:flex; }
+/* Pantallas con contenido largo — scroll interno en desktop */
+#s-journal.active,
+#s-historial.active,
+#s-entry-detail.active,
+#s-progress.active,
+#s-routines.active,
+#s-settings.active {
+  max-height: max(var(--screen-min-h), 100vh);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .phone::before {
   content:'';
   position:absolute; inset:0; z-index:0; pointer-events:none; border-radius:var(--shell-r);
@@ -102,8 +122,7 @@ body {
 }
 .phone > * { position:relative; z-index:1; }
 
-.screen { display:none; flex-direction:column; min-height: var(--screen-min-h); }
-.screen.active { display:flex; }
+/* Leopard texture overlay — very subtle */
 
 /* ══════════════════════════════════════════
    BREAKPOINT: tablet 480–900px
@@ -142,10 +161,31 @@ body {
     border: none;
     box-shadow: none;
     min-height: 100dvh;
+    height: auto;
     width: 100vw;
+    overflow: visible; /* sin shell decorativa — el page scrollea */
   }
   .phone::before { border-radius: 0; }
-  .screen { min-height: 100dvh; }
+  /* En mobile cada pantalla crece con su contenido */
+  .screen { min-height: 100dvh; height: auto; max-height: none; overflow: visible; }
+  /* Deshabilitar scroll interno — en mobile scrollea la página completa */
+  #s-journal.active,
+  #s-historial.active,
+  #s-entry-detail.active,
+  #s-progress.active,
+  #s-routines.active,
+  #s-settings.active {
+    max-height: none;
+    overflow-y: visible;
+  }
+  /* Las listas internas tampoco limitan altura */
+  .journal-body,
+  .routine-list,
+  .progress-body {
+    max-height: none;
+    overflow-y: visible;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px));
+  }
   /* safe area bottom para home indicator */
   .bottom-nav {
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
@@ -389,6 +429,15 @@ body {
   border-top:1px solid var(--rose-2); margin-top:auto;
   backdrop-filter:blur(6px);
 }
+@media (max-width: 479px) {
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    margin-top: 0;
+  }
+}
 .nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; cursor:pointer; color:var(--text-soft); font-size:10.5px; transition:color 0.2s; font-family:'DM Sans',sans-serif; }
 .nav-btn i { font-size:20px; }
 .nav-btn.active, .nav-btn:hover { color:var(--rose-4); }
@@ -439,7 +488,17 @@ body {
 
 /* ══ JOURNAL — rediseño cozy ══ */
 .journal-bg { background: linear-gradient(165deg, #fff9f5 0%, var(--rose-1) 100%); }
-.journal-body { flex:1; padding:0 1.1rem 1.4rem; display:flex; flex-direction:column; gap:14px; overflow-y:auto; }
+.journal-body {
+  flex:1;
+  padding:0 1.1rem 1.4rem;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling: touch;
+  /* Asegura que el botón guardar siempre sea visible */
+  padding-bottom: calc(1.4rem + env(safe-area-inset-bottom, 16px));
+}
 
 /* Botón "Mis memorias" en header */
 .btn-mis-memorias {

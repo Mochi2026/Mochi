@@ -1,7 +1,7 @@
 {
   "name": "Mochi — Tu lugar seguro",
   "short_name": "Mochi",
-  "start_url": "./index.htlm",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#fff8f5",
   "theme_color": "#f9d8e6",

@@ -1,7 +1,7 @@
-const CACHE = 'mochi-v1';
+const CACHE = 'mochi-v2';
 const ASSETS = [
   './',
-  './index.htlm',
+  './index.html',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap',
   'https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css'
 ];
