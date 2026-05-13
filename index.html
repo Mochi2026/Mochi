@@ -756,43 +756,114 @@ body {
   margin: 0 auto 0.5rem;
 }
 .pong-toggle-btn:hover { background: rgba(255,255,255,0.18); border-color: rgba(244,192,209,0.5); }
+
+/* Zona fullscreen del juego */
 .pong-zone {
   display: none;
   flex-direction: column;
   align-items: center;
-  padding: 0 1rem 1rem;
-  gap: 8px;
-  animation: fadeUp 0.4s ease;
+  padding: 0;
+  gap: 0;
+  animation: fadeUp 0.35s ease;
   width: 100%;
+  height: 100%;
+  justify-content: space-between;
 }
 .pong-zone.open { display: flex; }
+
+/* Header: dificultad + mute */
+.pong-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  gap: 10px;
+}
+.pong-difficulty {
+  display: flex;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(244,192,209,0.15);
+  border-radius: 50px;
+  padding: 4px;
+}
+.pong-diff-btn {
+  background: none;
+  border: none;
+  border-radius: 50px;
+  padding: 5px 13px;
+  font-size: 11.5px;
+  color: rgba(244,192,209,0.5);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  transition: all 0.2s;
+  letter-spacing: 0.01em;
+}
+.pong-diff-btn.active {
+  background: rgba(237,147,177,0.22);
+  color: rgba(244,192,209,0.95);
+  box-shadow: 0 1px 6px rgba(180,60,100,0.18);
+}
+.pong-diff-btn:hover:not(.active) { color: rgba(244,192,209,0.75); }
+.pong-mute-btn {
+  background: none;
+  border: 1px solid rgba(244,192,209,0.18);
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(244,192,209,0.5);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.pong-mute-btn:hover { color: rgba(244,192,209,0.9); border-color: rgba(244,192,209,0.4); }
+
+/* Canvas — ocupa el espacio central */
 .pong-canvas-wrap {
   position: relative;
   border-radius: 20px;
   overflow: hidden;
   border: 1.5px solid rgba(244,192,209,0.25);
   box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 40px rgba(180,60,100,0.08);
-  /* El tamaño real lo setea JS dinámicamente */
-  line-height: 0; /* elimina espacio extra bajo el canvas */
+  line-height: 0;
+  flex-shrink: 0;
 }
 #pong-canvas {
   display: block;
   cursor: none;
   touch-action: none;
-  /* width/height los setea JS; NO poner acá valores fijos */
-  image-rendering: -webkit-optimize-contrast; /* nitidez en Retina */
+  image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+}
+
+/* Footer: puntaje + hint */
+.pong-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px 14px;
 }
 .pong-score {
   display: flex; gap: 28px; align-items: center;
   font-family: 'Playfair Display', serif;
-  font-size: 15px; color: rgba(244,192,209,0.8);
+  font-size: 16px; color: rgba(244,192,209,0.85);
+  letter-spacing: 0.02em;
 }
 .pong-score-sep { font-size: 12px; color: rgba(244,192,209,0.3); }
 .pong-hint {
-  font-size: 11px; color: rgba(244,192,209,0.45);
+  font-size: 10.5px; color: rgba(244,192,209,0.38);
   text-align: center; letter-spacing: 0.03em;
 }
+/* Animación del puntaje al sumar */
+@keyframes score-pop { 0%{transform:scale(1)} 40%{transform:scale(1.45)} 100%{transform:scale(1)} }
+.score-pop { animation: score-pop 0.35s cubic-bezier(.34,1.56,.64,1); }
+/* Glow en el canvas al anotar punto */
+@keyframes canvas-glow { 0%{box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 0 0 rgba(237,147,177,0)} 40%{box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 28px 8px rgba(237,147,177,0.35)} 100%{box-shadow:0 8px 32px rgba(0,0,0,0.4),0 0 0 0 rgba(237,147,177,0)} }
+.canvas-glow { animation: canvas-glow 0.7s ease; }
 
 /* ══ ROUTINES ══ */
 .routines-bg { background:linear-gradient(165deg, var(--rose-0) 0%, var(--rose-1) 100%); }
@@ -1921,19 +1992,35 @@ body {
     <span>🏓</span> Jugar con Mochi
   </button>
   <div class="pong-zone" id="pong-zone">
-    <div class="pong-score">
-      <span id="pong-score-player">Vos: 0</span>
-      <span class="pong-score-sep">·</span>
-      <span id="pong-score-cpu">Mochi: 0</span>
-      <button id="pong-mute-btn" onclick="PongGame.toggleMute()" title="Silenciar sonido" style="background:none;border:none;cursor:pointer;color:rgba(244,192,209,0.55);padding:2px 4px;margin-left:4px;transition:color 0.2s;" onmouseenter="this.style.color='rgba(244,192,209,0.9)'" onmouseleave="this.style.color='rgba(244,192,209,0.55)'">
-        <i class="ti ti-volume" style="font-size:14px;"></i>
+
+    <!-- HEADER: dificultad + mute -->
+    <div class="pong-header">
+      <div class="pong-difficulty">
+        <button class="pong-diff-btn active" data-diff="easy"   onclick="PongGame.setDifficulty('easy',this)">Fácil</button>
+        <button class="pong-diff-btn"        data-diff="normal" onclick="PongGame.setDifficulty('normal',this)">Normal</button>
+        <button class="pong-diff-btn"        data-diff="hard"   onclick="PongGame.setDifficulty('hard',this)">Difícil 🔥</button>
+      </div>
+      <button id="pong-mute-btn" class="pong-mute-btn" onclick="PongGame.toggleMute()" title="Silenciar">
+        <i class="ti ti-volume" style="font-size:15px;"></i>
       </button>
     </div>
+
+    <!-- CANVAS -->
     <div class="pong-canvas-wrap">
       <canvas id="pong-canvas"></canvas>
       <div id="pong-celebration" style="position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) scale(1);font-size:28px;pointer-events:none;opacity:0;z-index:10;text-align:center;transition:none;"></div>
     </div>
-    <div class="pong-hint">Mové el dedo o el mouse para controlar tu Mochi 🌸</div>
+
+    <!-- FOOTER: puntaje + hint -->
+    <div class="pong-footer">
+      <div class="pong-score">
+        <span id="pong-score-player">Vos: 0</span>
+        <span class="pong-score-sep">·</span>
+        <span id="pong-score-cpu">Mochi: 0</span>
+      </div>
+      <div class="pong-hint">Mové el dedo para controlar tu Mochi 🌸</div>
+    </div>
+
   </div>
 </div>
 
@@ -3831,6 +3918,15 @@ const PongGame = (() => {
     // CPU IA
     CPU_SPEED:     1.57,     // unidades lógicas / frame que puede moverse la IA
 
+    // ── Dificultad ──
+    // Se sobreescribe por setDifficulty() en runtime
+    DIFFICULTY: 'easy',
+    DIFF_PRESETS: {
+      easy:   { CPU_SPEED: 1.05, BALL_SPEED_INIT: 1.9,  HIT_ACCEL_PLAYER: 1.025, HIT_ACCEL_CPU: 1.015 },
+      normal: { CPU_SPEED: 1.57, BALL_SPEED_INIT: 2.26, HIT_ACCEL_PLAYER: 1.035, HIT_ACCEL_CPU: 1.026 },
+      hard:   { CPU_SPEED: 2.35, BALL_SPEED_INIT: 2.7,  HIT_ACCEL_PLAYER: 1.045, HIT_ACCEL_CPU: 1.038 },
+    },
+
     // Loop
     TARGET_FPS:    60,
     MAX_DT:        1.6,      // máx frames acumulados (anti-tunneling por tab inactivo)
@@ -4321,7 +4417,7 @@ const PongGame = (() => {
     },
 
     _onPoint(isPlayer) {
-      Renderer.updateScoreDOM();
+      Renderer.updateScoreDOM(isPlayer ? 'player' : 'cpu');
       state.msg      = isPlayer ? '¡Punto tuyo! 🌸' : 'Mochi anota 🐾';
       state.msgTimer = CONFIG.MSG_DURATION;
       Audio.point(isPlayer);
@@ -4339,11 +4435,29 @@ const PongGame = (() => {
   //  No lee input, no modifica state.ball, etc.
   // ════════════════════════════════════════
   const Renderer = {
-    updateScoreDOM() {
+    updateScoreDOM(whoScored) {
       const elP = document.getElementById('pong-score-player');
       const elC = document.getElementById('pong-score-cpu');
       if (elP) elP.textContent = `Vos: ${state.scorePlayer}`;
       if (elC) elC.textContent = `Mochi: ${state.scoreCpu}`;
+      // Pop animation on the scorer's element
+      const popEl = whoScored === 'player' ? elP : whoScored === 'cpu' ? elC : null;
+      if (popEl) {
+        popEl.classList.remove('score-pop');
+        void popEl.offsetWidth; // reflow to restart animation
+        popEl.classList.add('score-pop');
+        setTimeout(() => popEl.classList.remove('score-pop'), 400);
+      }
+      // Canvas glow on any score
+      if (whoScored) {
+        const wrap = document.querySelector('.pong-canvas-wrap');
+        if (wrap) {
+          wrap.classList.remove('canvas-glow');
+          void wrap.offsetWidth;
+          wrap.classList.add('canvas-glow');
+          setTimeout(() => wrap.classList.remove('canvas-glow'), 750);
+        }
+      }
     },
 
     // Aplica el transform base más cualquier shake activo.
@@ -4641,19 +4755,88 @@ const PongGame = (() => {
   function setPongMute(muted) { Audio.setMute(muted); }
   function toggleMute()       { Audio.setMute(!Audio.muted); }
 
-  return { start, stop, setPongMute, toggleMute };
+  function setDifficulty(diff, btn) {
+    const preset = CONFIG.DIFF_PRESETS[diff];
+    if (!preset) return;
+    CONFIG.DIFFICULTY = diff;
+    CONFIG.CPU_SPEED           = preset.CPU_SPEED;
+    CONFIG.BALL_SPEED_INIT     = preset.BALL_SPEED_INIT;
+    CONFIG.HIT_ACCEL_PLAYER    = preset.HIT_ACCEL_PLAYER;
+    CONFIG.HIT_ACCEL_CPU       = preset.HIT_ACCEL_CPU;
+    // Update UI buttons
+    document.querySelectorAll('.pong-diff-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    // If game is running, reset physics (new round feels immediately different)
+    if (state.running) Physics.reset();
+  }
+
+  return { start, stop, setPongMute, toggleMute, setDifficulty };
 })();
 
 function togglePong() {
-  const zone = document.getElementById('pong-zone');
-  const btn  = document.querySelector('.pong-toggle-btn');
-  if (!zone) return;
+  const zone    = document.getElementById('pong-zone');
+  const btn     = document.querySelector('.pong-toggle-btn');
+  const screen  = document.getElementById('s-anxiety');
+  if (!zone || !screen) return;
+
   const open = zone.classList.toggle('open');
+
+  // Elementos a ocultar cuando el juego está abierto
+  const hideSelectors = [
+    '.screen-header',
+    '.breath-zone',
+    '.anxiety-tools',
+  ];
+
   if (open) {
     btn.innerHTML = '<span>✕</span> Cerrar juego';
+    // Ocultar todo el contenido de la pantalla excepto el juego y el botón
+    hideSelectors.forEach(sel => {
+      screen.querySelectorAll(sel).forEach(el => {
+        el.style.display = 'none';
+        el.dataset.pongHidden = '1';
+      });
+    });
+    // Hacer que la pong-zone ocupe toda la pantalla
+    zone.style.position = 'absolute';
+    zone.style.inset = '0';
+    zone.style.padding = '0';
+    zone.style.zIndex = '10';
+    zone.style.background = 'linear-gradient(165deg, var(--night-bg) 0%, #211018 60%, #3d1e2c 100%)';
+    zone.style.borderRadius = '0';
+    // El botón cerrar queda fuera del flujo del juego — lo ponemos en corner
+    btn.style.position = 'absolute';
+    btn.style.top = '0';
+    btn.style.right = '0';
+    btn.style.zIndex = '20';
+    btn.style.margin = '10px 12px 0 0';
+    btn.style.fontSize = '11px';
+    btn.style.padding = '6px 14px';
+    // scroll al top
+    screen.scrollTop = 0;
     PongGame.start();
   } else {
     btn.innerHTML = '<span>🏓</span> Jugar con Mochi';
+    // Restaurar todo
+    hideSelectors.forEach(sel => {
+      screen.querySelectorAll(sel).forEach(el => {
+        el.style.display = '';
+        delete el.dataset.pongHidden;
+      });
+    });
+    zone.style.position = '';
+    zone.style.inset = '';
+    zone.style.padding = '';
+    zone.style.zIndex = '';
+    zone.style.background = '';
+    zone.style.borderRadius = '';
+    btn.style.position = '';
+    btn.style.top = '';
+    btn.style.right = '';
+    btn.style.zIndex = '';
+    btn.style.margin = '';
+    btn.style.fontSize = '';
+    btn.style.padding = '';
     PongGame.stop();
   }
 }
