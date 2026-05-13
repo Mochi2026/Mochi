@@ -744,6 +744,143 @@ body {
 }
 .a-tool:hover { background:rgba(255,255,255,0.17); border-color:rgba(244,192,209,0.4); }
 
+/* ══ TETRIS MOCHI GAME ══ */
+.tetris-toggle-btn {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(244,192,209,0.3);
+  border-radius: 50px; padding: 9px 22px;
+  font-size: 12.5px; color: rgba(244,192,209,0.9);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.25s; letter-spacing: 0.02em;
+  display: flex; align-items: center; gap: 7px;
+  margin: 0 auto 0.5rem;
+}
+.tetris-toggle-btn:hover { background: rgba(255,255,255,0.18); border-color: rgba(244,192,209,0.5); }
+
+.tetris-zone {
+  display: none;
+  position: absolute; inset: 0; z-index: 10;
+  background: linear-gradient(165deg, var(--night-bg) 0%, #211018 60%, #3d1e2c 100%);
+  flex-direction: column;
+  overflow: hidden;
+}
+.tetris-zone.open { display: flex; }
+
+/* Tetris inner layout */
+.tet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px 8px; flex-shrink: 0;
+}
+.tet-title {
+  font-family: 'Playfair Display', serif; font-size: 17px;
+  color: var(--rose-2); font-style: italic;
+}
+.tet-close-btn {
+  background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+  color: rgba(176,128,144,0.7); font-size: 11px; padding: 4px 12px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.tet-close-btn:hover { border-color: rgba(244,192,209,0.4); color: rgba(244,192,209,0.9); }
+
+.tet-pause-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px 6px; flex-shrink: 0;
+}
+.tet-pause-btn {
+  background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+  color: var(--night-3); font-size: 10px; padding: 3px 10px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.tet-hint { font-size: 9px; color: rgba(176,128,144,0.45); font-style: italic; }
+
+.tet-diff-pills { display: flex; gap: 4px; }
+.tet-diff-pill {
+  font-size: 10px; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.1); background: none;
+  color: var(--night-3); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s;
+}
+.tet-diff-pill.active { background: rgba(249,184,204,0.12); border-color: var(--rose-3); color: var(--rose-2); }
+
+.tet-body {
+  display: flex; gap: 8px; padding: 0 10px 8px; flex: 1; min-height: 0;
+}
+.tet-sidebar {
+  display: flex; flex-direction: column; gap: 7px; width: 72px; flex-shrink: 0;
+}
+.tet-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 8px 6px; text-align: center;
+}
+.tet-label {
+  font-size: 8px; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--night-3); margin-bottom: 2px; display: block;
+}
+.tet-value { font-size: 15px; font-weight: 500; color: var(--rose-2); line-height: 1; }
+
+.tet-mochi-widget {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px; padding: 8px 4px 6px; text-align: center; flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+}
+.tet-mochi-msg {
+  font-size: 8px; color: var(--night-3); font-style: italic;
+  line-height: 1.3; text-align: center;
+}
+/* SVG mochi inside tetris — fixed size */
+.tet-mochi-svg { width: 60px; height: 60px; display: block; }
+
+.tet-board-wrap {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start; position: relative;
+}
+#tet-board-canvas {
+  border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.3); display: block; touch-action: none;
+}
+#tet-clear-flash {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(249,184,204,0.15); z-index: 3; pointer-events: none;
+  opacity: 0; border-radius: 10px; transition: opacity 0.08s;
+}
+#tet-clear-flash.flash { opacity: 1; }
+#tet-particle-canvas {
+  position: absolute; inset: 0; pointer-events: none; z-index: 8; width: 100%; height: 100%;
+}
+
+.tet-overlay {
+  display: none; position: absolute; inset: 0; background: rgba(26,13,20,0.93);
+  z-index: 20; flex-direction: column; align-items: center;
+  justify-content: center; gap: 14px; text-align: center; padding: 24px;
+}
+.tet-overlay.active { display: flex; }
+.tet-overlay-float { animation: floatY 2.2s ease-in-out infinite; font-size: 52px; }
+@keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+.tet-overlay-title {
+  font-family: 'Playfair Display', serif; font-size: 22px;
+  color: var(--rose-2); font-style: italic;
+}
+.tet-overlay-sub { font-size: 12px; color: var(--night-3); line-height: 1.7; max-width: 220px; white-space: pre-line; }
+.tet-overlay-score { font-size: 28px; font-weight: 300; color: var(--rose-3); letter-spacing: 0.05em; }
+.tet-play-btn {
+  background: linear-gradient(135deg, var(--rose-4), var(--rose-5));
+  border: none; border-radius: 50px; color: white;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+  padding: 13px 30px; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(168,77,99,0.35); transition: all 0.2s;
+}
+.tet-play-btn:active { transform: scale(0.95); }
+.tet-hs-badge {
+  font-size: 10px; color: var(--night-3);
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px; padding: 4px 12px;
+}
+.tet-back-link {
+  background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 50px;
+  color: var(--night-3); font-family: 'DM Sans', sans-serif; font-size: 12px;
+  padding: 8px 20px; cursor: pointer; transition: all 0.2s;
+}
+.tet-back-link:hover { border-color: rgba(244,192,209,0.35); color: rgba(244,192,209,0.8); }
+
 /* ══ PING PONG MOCHI GAME ══ */
 .pong-toggle-btn {
   background: rgba(255,255,255,0.10);
@@ -819,6 +956,20 @@ body {
   flex-shrink: 0;
 }
 .pong-mute-btn:hover { color: rgba(244,192,209,0.9); border-color: rgba(244,192,209,0.4); }
+.pong-close-btn {
+  background: none;
+  border: 1px solid rgba(244,192,209,0.2);
+  border-radius: 50px;
+  padding: 5px 13px;
+  font-size: 11px;
+  color: rgba(244,192,209,0.55);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pong-close-btn:hover { color: rgba(244,192,209,0.9); border-color: rgba(244,192,209,0.4); }
 
 /* Canvas — ocupa el espacio central */
 .pong-canvas-wrap {
@@ -1993,8 +2144,9 @@ body {
   </button>
   <div class="pong-zone" id="pong-zone">
 
-    <!-- HEADER: dificultad + mute -->
+    <!-- HEADER: cerrar + dificultad + mute — todo en una fila -->
     <div class="pong-header">
+      <button class="pong-close-btn" onclick="togglePong()" id="pong-close-btn">✕ Salir</button>
       <div class="pong-difficulty">
         <button class="pong-diff-btn active" data-diff="easy"   onclick="PongGame.setDifficulty('easy',this)">Fácil</button>
         <button class="pong-diff-btn"        data-diff="normal" onclick="PongGame.setDifficulty('normal',this)">Normal</button>
@@ -2021,10 +2173,109 @@ body {
       <div class="pong-hint">Mové el dedo para controlar tu Mochi 🌸</div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /pong-zone -->
 
-<!-- ══ ROUTINES ══ -->
+  <!-- ── TETRIS MOCHI ── -->
+  <button class="tetris-toggle-btn" onclick="toggleTetris()">
+    <span>🧩</span> Tetris Mochi
+  </button>
+
+  <!-- TETRIS ZONE — fullscreen dentro de s-anxiety -->
+  <div class="tetris-zone" id="tetris-zone">
+    <canvas id="tet-particle-canvas"></canvas>
+
+    <div class="tet-header">
+      <div class="tet-title">Mochi Tetris 🌸</div>
+      <div class="tet-diff-pills">
+        <button class="tet-diff-pill active" onclick="tetSetDiff('easy',this)">Fácil</button>
+        <button class="tet-diff-pill" onclick="tetSetDiff('normal',this)">Normal</button>
+        <button class="tet-diff-pill" onclick="tetSetDiff('hard',this)">Difícil🔥</button>
+      </div>
+    </div>
+
+    <div class="tet-pause-bar">
+      <button class="tet-pause-btn" id="tet-pause-btn" onclick="tetTogglePause()">⏸ Pausa</button>
+      <button class="tet-close-btn" onclick="toggleTetris()">← Salir</button>
+      <span class="tet-hint">deslizá · toca para rotar</span>
+    </div>
+
+    <div class="tet-body">
+      <div class="tet-sidebar">
+        <div class="tet-card">
+          <span class="tet-label">Puntaje</span>
+          <div class="tet-value" id="tet-score">0</div>
+        </div>
+        <div class="tet-card">
+          <span class="tet-label">Nivel</span>
+          <div class="tet-value" id="tet-level">1</div>
+        </div>
+        <div class="tet-card">
+          <span class="tet-label">Líneas</span>
+          <div class="tet-value" id="tet-lines">0</div>
+        </div>
+        <div class="tet-mochi-widget">
+          <!-- SVG mochi — se intercambia según estado emocional -->
+          <div id="tet-mochi-svg-wrap" class="mochi-svg-wrap mochi-state-calm" style="width:60px;height:60px;">
+            <svg class="tet-mochi-svg" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" id="tet-mochi-svg">
+              <g class="mochi-body-group">
+                <g class="ear-l" style="transform-origin:68px 68px"><ellipse cx="68" cy="68" rx="24" ry="27" fill="#FFAEC0" transform="rotate(-20 68 68)"/><ellipse cx="68" cy="68" rx="14" ry="17" fill="#fcd0d8" transform="rotate(-20 68 68)"/></g>
+                <g class="ear-r" style="transform-origin:152px 68px"><ellipse cx="152" cy="68" rx="24" ry="27" fill="#FFAEC0" transform="rotate(20 152 68)"/><ellipse cx="152" cy="68" rx="14" ry="17" fill="#fcd0d8" transform="rotate(20 152 68)"/></g>
+                <ellipse cx="110" cy="115" rx="64" ry="61" fill="#FFAEC0"/>
+                <g id="tet-mochi-face">
+                  <!-- calm face — default -->
+                  <circle cx="90" cy="113" r="13" fill="#3d1520"/>
+                  <circle cx="130" cy="113" r="13" fill="#3d1520"/>
+                  <ellipse cx="85" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/>
+                  <ellipse cx="125" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/>
+                  <path d="M98 136 Q110 143 122 136" stroke="#c97a9a" stroke-width="2" fill="none" stroke-linecap="round"/>
+                </g>
+                <ellipse cx="78" cy="130" rx="14" ry="8" fill="#ffb8c8" opacity="0.55"/>
+                <ellipse cx="142" cy="130" rx="14" ry="8" fill="#ffb8c8" opacity="0.55"/>
+                <ellipse cx="88" cy="162" rx="20" ry="14" fill="#ffb8c8"/>
+                <ellipse cx="132" cy="162" rx="20" ry="14" fill="#ffb8c8"/>
+              </g>
+            </svg>
+          </div>
+          <div class="tet-mochi-msg" id="tet-mochi-msg">feliz 🌸</div>
+        </div>
+        <div class="tet-card">
+          <span class="tet-label">Sig.</span>
+          <canvas id="tet-next-canvas" width="120" height="100" style="width:56px;height:46px;display:block;margin:4px auto 0"></canvas>
+        </div>
+      </div>
+
+      <div class="tet-board-wrap">
+        <canvas id="tet-board-canvas"></canvas>
+        <div id="tet-clear-flash"></div>
+      </div>
+    </div>
+
+    <!-- OVERLAYS -->
+    <div class="tet-overlay active" id="tet-ov-start">
+      <div class="tet-overlay-float">🌸</div>
+      <div class="tet-overlay-title">Mochi Tetris</div>
+      <div class="tet-hs-badge" id="tet-hs-badge">récord: 0</div>
+      <button class="tet-play-btn" onclick="tetStart()">Empezar 🌸</button>
+      <button class="tet-back-link" onclick="toggleTetris()">← Volver a calmar ansiedad</button>
+    </div>
+    <div class="tet-overlay" id="tet-ov-pause">
+      <div class="tet-overlay-float">🌙</div>
+      <div class="tet-overlay-title">Pausa</div>
+      <div class="tet-overlay-sub">Tomá aire. Mochi te espera.</div>
+      <button class="tet-play-btn" onclick="tetTogglePause()">Seguir jugando</button>
+      <button class="tet-back-link" onclick="tetGoMenu()">← Volver al menú</button>
+    </div>
+    <div class="tet-overlay" id="tet-ov-over">
+      <div class="tet-overlay-float" id="tet-over-emoji">🌸</div>
+      <div class="tet-overlay-title" id="tet-over-title">hasta acá llegamos</div>
+      <div class="tet-overlay-sub" id="tet-over-sub">estuvo bien intentarlo</div>
+      <div class="tet-overlay-score" id="tet-over-score">0</div>
+      <button class="tet-play-btn" onclick="tetStart()">Otra vez 🌸</button>
+      <button class="tet-back-link" onclick="tetGoMenu()">← Volver al menú</button>
+    </div>
+  </div>
+
+</div><!-- /s-anxiety -->
 <div class="screen routines-bg" id="s-routines">
   <div class="screen-header">
     <button class="back-btn" onclick="goTo('s-home')"><i class="ti ti-arrow-left"></i></button>
@@ -4781,43 +5032,30 @@ function togglePong() {
 
   const open = zone.classList.toggle('open');
 
-  // Elementos a ocultar cuando el juego está abierto
   const hideSelectors = [
     '.screen-header',
     '.breath-zone',
     '.anxiety-tools',
+    '.pong-toggle-btn',
+    '.tetris-toggle-btn',
   ];
 
   if (open) {
-    btn.innerHTML = '<span>✕</span> Cerrar juego';
-    // Ocultar todo el contenido de la pantalla excepto el juego y el botón
     hideSelectors.forEach(sel => {
       screen.querySelectorAll(sel).forEach(el => {
         el.style.display = 'none';
         el.dataset.pongHidden = '1';
       });
     });
-    // Hacer que la pong-zone ocupe toda la pantalla
     zone.style.position = 'absolute';
     zone.style.inset = '0';
     zone.style.padding = '0';
     zone.style.zIndex = '10';
     zone.style.background = 'linear-gradient(165deg, var(--night-bg) 0%, #211018 60%, #3d1e2c 100%)';
     zone.style.borderRadius = '0';
-    // El botón cerrar queda fuera del flujo del juego — lo ponemos en corner
-    btn.style.position = 'absolute';
-    btn.style.top = '0';
-    btn.style.right = '0';
-    btn.style.zIndex = '20';
-    btn.style.margin = '10px 12px 0 0';
-    btn.style.fontSize = '11px';
-    btn.style.padding = '6px 14px';
-    // scroll al top
     screen.scrollTop = 0;
     PongGame.start();
   } else {
-    btn.innerHTML = '<span>🏓</span> Jugar con Mochi';
-    // Restaurar todo
     hideSelectors.forEach(sel => {
       screen.querySelectorAll(sel).forEach(el => {
         el.style.display = '';
@@ -4830,17 +5068,318 @@ function togglePong() {
     zone.style.zIndex = '';
     zone.style.background = '';
     zone.style.borderRadius = '';
-    btn.style.position = '';
-    btn.style.top = '';
-    btn.style.right = '';
-    btn.style.zIndex = '';
-    btn.style.margin = '';
-    btn.style.fontSize = '';
-    btn.style.padding = '';
     PongGame.stop();
   }
 }
 
+</script>
+<script>
+// ══════════════════════════════════════════════════
+//  MOCHI TETRIS — integrado en index.html
+// ══════════════════════════════════════════════════
+(function(){
+
+// ── TOGGLE desde la pantalla de ansiedad ──
+window.toggleTetris = function() {
+  const zone   = document.getElementById('tetris-zone');
+  const screen = document.getElementById('s-anxiety');
+  if (!zone || !screen) return;
+  const open = zone.classList.toggle('open');
+  const hideSelectors = ['.screen-header','.breath-zone','.anxiety-tools','.pong-toggle-btn','.pong-zone','.tetris-toggle-btn'];
+  if (open) {
+    hideSelectors.forEach(sel => screen.querySelectorAll(sel).forEach(el => { el.style.display='none'; el.dataset.tetHidden='1'; }));
+    screen.scrollTop = 0;
+    tetInitIfNeeded();
+  } else {
+    hideSelectors.forEach(sel => screen.querySelectorAll(sel).forEach(el => { el.style.display=''; delete el.dataset.tetHidden; }));
+    if (TG.raf) { cancelAnimationFrame(TG.raf); TG.raf=null; }
+    TG.running = false;
+  }
+};
+
+const TET_COLS=10, TET_ROWS=20, TET_CELL=24;
+const TET_PIECES = {
+  I:{ m:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]], c:'#f9b8cc' },
+  O:{ m:[[1,1],[1,1]],                              c:'#f9d8a0' },
+  T:{ m:[[0,1,0],[1,1,1],[0,0,0]],                  c:'#d4a0e8' },
+  S:{ m:[[0,1,1],[1,1,0],[0,0,0]],                  c:'#a0d8b8' },
+  Z:{ m:[[1,1,0],[0,1,1],[0,0,0]],                  c:'#f0a090' },
+  J:{ m:[[1,0,0],[1,1,1],[0,0,0]],                  c:'#90c0f0' },
+  L:{ m:[[0,0,1],[1,1,1],[0,0,0]],                  c:'#f0c878' },
+};
+const TET_KEYS = Object.keys(TET_PIECES);
+const TET_DIFF = { easy:{ms:750,step:40}, normal:{ms:500,step:55}, hard:{ms:280,step:65} };
+
+// 7-bag
+let _tetBag=[];
+function _refillBag(){ _tetBag=[...TET_KEYS]; for(let i=_tetBag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[_tetBag[i],_tetBag[j]]=[_tetBag[j],_tetBag[i]];} }
+function _nextBag(){ if(!_tetBag.length) _refillBag(); return _tetBag.pop(); }
+function mkTetPiece(k){ const d=TET_PIECES[k]; return {type:k,color:d.c,m:d.m.map(r=>[...r]),x:Math.floor((TET_COLS-d.m[0].length)/2),y:0}; }
+const randTetPiece=()=>mkTetPiece(_nextBag());
+
+const TG = {
+  board:[],cur:null,nxt:null,score:0,level:1,lines:0,
+  running:false,paused:false,dropAcc:0,lastTs:0,raf:null,
+  speed:750,diff:'easy',mochiState:'calm',
+  dasLeft:false,dasRight:false,dasTimer:0,arrTimer:0,keysDown:new Set(),
+  hs:+localStorage.getItem('mochi_tet_hs')||0,
+};
+const TET_DAS=170, TET_ARR=50;
+
+// canvas refs
+let bCv,bCtx,nCv,nCtx,pCv,pCtx,tetInited=false;
+function tetInitIfNeeded(){
+  if(tetInited) return;
+  tetInited=true;
+  bCv=document.getElementById('tet-board-canvas');
+  bCtx=bCv.getContext('2d');
+  nCv=document.getElementById('tet-next-canvas');
+  nCtx=nCv.getContext('2d');
+  pCv=document.getElementById('tet-particle-canvas');
+  pCtx=pCv.getContext('2d');
+  const DPR=Math.min(devicePixelRatio||1,2);
+  const lw=TET_COLS*TET_CELL,lh=TET_ROWS*TET_CELL;
+  bCv.width=lw*DPR; bCv.height=lh*DPR; bCv.style.width=lw+'px'; bCv.style.height=lh+'px'; bCtx.scale(DPR,DPR);
+  nCv.width=120; nCv.height=100; nCtx.scale(2,2);
+  document.getElementById('tet-hs-badge').textContent='récord: '+TG.hs.toLocaleString();
+  bindTetTouch();
+  bindTetKeys();
+  // idle loop
+  (function idle(){ if(!TG.running){ tetTickParts(); tetDrawParts(); } requestAnimationFrame(idle); })();
+}
+
+// ── MOCHI SVG states ──
+const TET_MOCHI_FACES = {
+  calm: `<circle cx="90" cy="113" r="13" fill="#3d1520"/><circle cx="130" cy="113" r="13" fill="#3d1520"/><ellipse cx="85" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/><ellipse cx="125" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/><path d="M98 136 Q110 143 122 136" stroke="#c97a9a" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  happy: `<path d="M70 113 Q88 92 106 113" stroke="#5a1830" stroke-width="4.5" fill="none" stroke-linecap="round"/><path d="M114 113 Q132 92 150 113" stroke="#5a1830" stroke-width="4.5" fill="none" stroke-linecap="round"/><circle cx="80" cy="106" r="3" fill="white" opacity="0.9"/><circle cx="140" cy="106" r="3" fill="white" opacity="0.9"/><path d="M88 140 Q110 162 132 140" stroke="#5a1830" stroke-width="2.8" fill="none" stroke-linecap="round"/>`,
+  worried: `<circle cx="90" cy="113" r="13" fill="#3d1520"/><circle cx="130" cy="113" r="13" fill="#3d1520"/><ellipse cx="85" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/><ellipse cx="125" cy="108" rx="4.5" ry="5" fill="white" opacity="0.85"/><path d="M78 97 Q88 103 100 98" stroke="#5a1830" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M120 98 Q132 103 144 97" stroke="#5a1830" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M96 148 Q110 139 124 148" stroke="#c97a9a" stroke-width="2" fill="none" stroke-linecap="round"/>`,
+  crisis: `<line x1="72" y1="104" x2="86" y2="114" stroke="#3d1520" stroke-width="3.5" stroke-linecap="round"/><line x1="72" y1="124" x2="86" y2="114" stroke="#3d1520" stroke-width="3.5" stroke-linecap="round"/><line x1="148" y1="104" x2="134" y2="114" stroke="#3d1520" stroke-width="3.5" stroke-linecap="round"/><line x1="148" y1="124" x2="134" y2="114" stroke="#3d1520" stroke-width="3.5" stroke-linecap="round"/><ellipse cx="110" cy="148" rx="8" ry="6.5" fill="none" stroke="#5a1830" stroke-width="2"/>`,
+};
+const TET_MOCHI_ANIM = { calm:'mochi-state-calm', happy:'mochi-state-happy', worried:'mochi-state-worried', crisis:'mochi-state-crisis' };
+const TET_MOCHI_BODY = {
+  calm:   '#FFAEC0',
+  happy:  '#FFAEC0',
+  worried:'#f09ab2',
+  crisis: '#e8809a',
+};
+function setTetMochiState(st, msg){
+  TG.mochiState=st;
+  const wrap=document.getElementById('tet-mochi-svg-wrap');
+  const face=document.getElementById('tet-mochi-face');
+  const body=document.querySelector('#tet-mochi-svg ellipse[cx="110"][cy="115"]');
+  const msgEl=document.getElementById('tet-mochi-msg');
+  if(wrap){ wrap.className='mochi-svg-wrap '+(TET_MOCHI_ANIM[st]||'mochi-state-calm'); }
+  if(face){ face.innerHTML=TET_MOCHI_FACES[st]||TET_MOCHI_FACES.calm; }
+  if(body){ body.setAttribute('fill', TET_MOCHI_BODY[st]||'#FFAEC0'); }
+  if(msgEl){ msgEl.textContent=msg; }
+}
+function evalTetMochi(cleared){
+  if(cleared>0){ setTetMochiState('happy', cleared>=4?'¡TETRIS! 💖':cleared>=2?'¡sí! 🌸':'¡bien! ✨'); return; }
+  let filled=0;
+  for(let r=0;r<TET_ROWS;r++) if(TG.board[r].some(c=>c)) filled++;
+  const p=filled/TET_ROWS;
+  if(p<0.4)       setTetMochiState('calm','tranquila 🌸');
+  else if(p<0.65) setTetMochiState('calm','vamos bien ✨');
+  else if(p<0.82) setTetMochiState('worried','¡cuidado! 😟');
+  else            setTetMochiState('crisis','¡aaah! 😱');
+}
+
+// ── PARTICLES ──
+let tetParts=[];
+function tetSpawnParts(n){
+  if(!pCv) return;
+  const W=pCv.offsetWidth||200,H=pCv.offsetHeight||400;
+  const emj=['🌸','⭐','💖','✨','🌷'];
+  for(let i=0;i<n;i++) tetParts.push({x:W*0.15+Math.random()*W*0.7,y:H*0.3+Math.random()*H*0.3,vx:(Math.random()-0.5)*5,vy:-2-Math.random()*4.5,life:1,decay:0.02+Math.random()*0.01,emoji:emj[Math.floor(Math.random()*emj.length)],size:13+Math.random()*10});
+}
+function tetTickParts(){ tetParts=tetParts.filter(p=>p.life>0); tetParts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=p.decay;}); }
+function tetDrawParts(){
+  if(!pCtx||!pCv) return;
+  pCtx.clearRect(0,0,pCv.offsetWidth,pCv.offsetHeight);
+  tetParts.forEach(p=>{ pCtx.globalAlpha=Math.max(0,p.life); pCtx.font=p.size+'px serif'; pCtx.textAlign='center'; pCtx.fillText(p.emoji,p.x,p.y); });
+  pCtx.globalAlpha=1;
+}
+
+// ── BOARD ──
+const mkTetBoard=()=>Array.from({length:TET_ROWS},()=>Array(TET_COLS).fill(null));
+function tetRotateCW(m){ const R=m.length,C=m[0].length,o=Array.from({length:C},()=>Array(R).fill(0)); for(let r=0;r<R;r++) for(let c=0;c<C;c++) o[c][R-1-r]=m[r][c]; return o; }
+function tetValid(m,x,y,board){ for(let r=0;r<m.length;r++) for(let c=0;c<m[r].length;c++){ if(!m[r][c]) continue; const nx=x+c,ny=y+r; if(nx<0||nx>=TET_COLS||ny>=TET_ROWS) return false; if(ny>=0&&board[ny][nx]) return false; } return true; }
+function tetPlace(p,board){ for(let r=0;r<p.m.length;r++) for(let c=0;c<p.m[r].length;c++){ if(!p.m[r][c]) continue; const ny=p.y+r,nx=p.x+c; if(ny>=0) board[ny][nx]=p.color; } }
+function tetSweep(board){ let n=0; for(let r=TET_ROWS-1;r>=0;r--){ if(board[r].every(c=>c)){ board.splice(r,1); board.unshift(Array(TET_COLS).fill(null)); n++; r++; } } return n; }
+function tetGhostY(p,board){ let gy=p.y; while(tetValid(p.m,p.x,gy+1,board)) gy++; return gy; }
+
+// ── SCORE ──
+const TET_PTS=[0,100,300,500,800];
+function tetAddScore(lines){
+  TG.score+=(TET_PTS[lines]||0)*TG.level; TG.lines+=lines;
+  const nl=Math.floor(TG.lines/10)+1;
+  if(nl>TG.level){ TG.level=nl; TG.speed=Math.max(80,TET_DIFF[TG.diff].ms-(TG.level-1)*TET_DIFF[TG.diff].step); }
+  tetUpdateHUD();
+}
+function tetUpdateHUD(){ document.getElementById('tet-score').textContent=TG.score; document.getElementById('tet-level').textContent=TG.level; document.getElementById('tet-lines').textContent=TG.lines; }
+
+// ── AUDIO ──
+let tetAC=null;
+function getTetAC(){ if(!tetAC) tetAC=new(window.AudioContext||window.webkitAudioContext)(); if(tetAC.state==='suspended') tetAC.resume(); return tetAC; }
+function tetTone(freq,t,dur=0.18,vol=0.08,type='sine'){ try{ const ctx=getTetAC(),osc=ctx.createOscillator(),gain=ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.type=type; osc.frequency.value=freq; gain.gain.setValueAtTime(0,t); gain.gain.linearRampToValueAtTime(vol,t+0.015); gain.gain.exponentialRampToValueAtTime(0.001,t+dur); osc.start(t); osc.stop(t+dur+0.05); }catch(e){} }
+const TET_PENTA=[523.25,587.33,659.26,783.99,880,1046.5,1174.66,1318.51];
+function tetPlayMove(){ const t=getTetAC().currentTime; tetTone(783.99,t,0.07,0.04); }
+function tetPlayRotate(){ const t=getTetAC().currentTime; tetTone(1046.5,t,0.09,0.05); tetTone(1318.51,t+0.04,0.07,0.03); }
+function tetPlayLock(){ const t=getTetAC().currentTime; tetTone(330,t,0.14,0.07,'triangle'); tetTone(220,t+0.06,0.1,0.04,'triangle'); }
+function tetPlayClear(lines){ const t=getTetAC().currentTime; const pats={1:[4,7],2:[0,4,7,9],3:[0,2,4,7,9],4:[0,2,4,5,7,9,11]}; const mel=pats[Math.min(lines,4)]||pats[1]; mel.forEach((idx,i)=>{ const f=TET_PENTA[idx%TET_PENTA.length]; tetTone(f,t+i*0.08,0.25,0.12); tetTone(f*2,t+i*0.08,0.2,0.04); }); tetTone(TET_PENTA[7],t+mel.length*0.08,0.35,0.07); }
+function tetPlayOver(){ const t=getTetAC().currentTime; [440,392,349,330,294].forEach((f,i)=>tetTone(f,t+i*0.13,0.3,0.09,'triangle')); }
+
+// ── RENDER ──
+function tetRRect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath(); }
+function tetDrawCell(ctx,col,row,color,alpha=1){ const x=col*TET_CELL,y=row*TET_CELL,pad=1.5,r=5; ctx.globalAlpha=alpha; ctx.fillStyle=color; tetRRect(ctx,x+pad,y+pad,TET_CELL-pad*2,TET_CELL-pad*2,r); ctx.fill(); const g=ctx.createLinearGradient(x,y,x,y+TET_CELL); g.addColorStop(0,'rgba(255,255,255,0.42)'); g.addColorStop(0.45,'rgba(255,255,255,0)'); g.addColorStop(1,'rgba(0,0,0,0.2)'); ctx.fillStyle=g; tetRRect(ctx,x+pad,y+pad,TET_CELL-pad*2,TET_CELL-pad*2,r); ctx.fill(); ctx.strokeStyle='rgba(255,255,255,0.22)'; ctx.lineWidth=0.8; tetRRect(ctx,x+pad,y+pad,TET_CELL-pad*2,TET_CELL-pad*2,r); ctx.stroke(); ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.font=Math.round(TET_CELL*.44)+'px serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('♡',x+TET_CELL/2,y+TET_CELL/2); ctx.globalAlpha=1; }
+function tetDrawBoard(){
+  if(!bCtx) return;
+  const W=TET_COLS*TET_CELL,H=TET_ROWS*TET_CELL;
+  bCtx.clearRect(0,0,W,H);
+  bCtx.strokeStyle='rgba(255,255,255,0.032)'; bCtx.lineWidth=0.5;
+  for(let c=0;c<=TET_COLS;c++){bCtx.beginPath();bCtx.moveTo(c*TET_CELL,0);bCtx.lineTo(c*TET_CELL,H);bCtx.stroke();}
+  for(let r=0;r<=TET_ROWS;r++){bCtx.beginPath();bCtx.moveTo(0,r*TET_CELL);bCtx.lineTo(W,r*TET_CELL);bCtx.stroke();}
+  for(let r=0;r<TET_ROWS;r++) for(let c=0;c<TET_COLS;c++) if(TG.board[r][c]) tetDrawCell(bCtx,c,r,TG.board[r][c]);
+  if(!TG.cur) return;
+  const gy=tetGhostY(TG.cur,TG.board);
+  if(gy!==TG.cur.y) for(let r=0;r<TG.cur.m.length;r++) for(let c=0;c<TG.cur.m[r].length;c++){ if(!TG.cur.m[r][c]) continue; const ny=gy+r,nx=TG.cur.x+c; if(ny>=0&&ny<TET_ROWS) tetDrawCell(bCtx,nx,ny,TG.cur.color,0.17); }
+  for(let r=0;r<TG.cur.m.length;r++) for(let c=0;c<TG.cur.m[r].length;c++){ if(!TG.cur.m[r][c]) continue; const ny=TG.cur.y+r,nx=TG.cur.x+c; if(ny>=0) tetDrawCell(bCtx,nx,ny,TG.cur.color); }
+}
+function tetDrawNext(){
+  if(!nCtx) return;
+  nCtx.clearRect(0,0,60,50);
+  if(!TG.nxt) return;
+  const m=TG.nxt.m,cs=9,ox=Math.floor((60-m[0].length*cs)/2),oy=Math.floor((50-m.length*cs)/2);
+  for(let r=0;r<m.length;r++) for(let c=0;c<m[r].length;c++){ if(!m[r][c]) continue; nCtx.fillStyle=TG.nxt.color; tetRRect(nCtx,ox+c*cs+1,oy+r*cs+1,cs-2,cs-2,2); nCtx.fill(); nCtx.fillStyle='rgba(255,255,255,0.28)'; nCtx.font='6px serif'; nCtx.textAlign='center'; nCtx.textBaseline='middle'; nCtx.fillText('♡',ox+c*cs+cs/2,oy+r*cs+cs/2); }
+}
+
+// ── GAME LOOP ──
+function tetProcessDAS(dt){
+  if(!TG.running||TG.paused) return;
+  const l=TG.keysDown.has('ArrowLeft'),ri=TG.keysDown.has('ArrowRight');
+  if(!l&&!ri){TG.dasTimer=0;TG.arrTimer=0;return;}
+  TG.dasTimer+=dt;
+  if(TG.dasTimer>=TET_DAS){ TG.arrTimer+=dt; if(TG.arrTimer>=TET_ARR){ TG.arrTimer=0; if(l) tetDoLeft(); if(ri) tetDoRight(); } }
+}
+function tetLoop(ts){
+  if(!TG.running||TG.paused) return;
+  const dt=TG.lastTs?ts-TG.lastTs:0; TG.lastTs=ts;
+  TG.dropAcc+=dt;
+  if(TG.dropAcc>=TG.speed){ TG.dropAcc=0; if(!tetTryDown()){tetLockPiece();return;} }
+  tetProcessDAS(dt); tetTickParts(); tetDrawBoard(); tetDrawNext(); tetDrawParts();
+  TG.raf=requestAnimationFrame(tetLoop);
+}
+
+// ── MOVES ──
+function tetTryDown(){ if(tetValid(TG.cur.m,TG.cur.x,TG.cur.y+1,TG.board)){TG.cur.y++;return true;} return false; }
+function tetDoLeft(){ if(!TG.running||TG.paused||!TG.cur) return; if(tetValid(TG.cur.m,TG.cur.x-1,TG.cur.y,TG.board)){TG.cur.x--;tetPlayMove();tetDrawBoard();} }
+function tetDoRight(){ if(!TG.running||TG.paused||!TG.cur) return; if(tetValid(TG.cur.m,TG.cur.x+1,TG.cur.y,TG.board)){TG.cur.x++;tetPlayMove();tetDrawBoard();} }
+function tetDoRotate(){ if(!TG.running||TG.paused||!TG.cur) return; const rot=tetRotateCW(TG.cur.m); for(const k of[0,1,-1,2,-2]){ if(tetValid(rot,TG.cur.x+k,TG.cur.y,TG.board)){TG.cur.m=rot;TG.cur.x+=k;tetPlayRotate();tetDrawBoard();return;} } }
+function tetDoSoftDrop(){ if(!TG.running||TG.paused||!TG.cur) return; if(!tetTryDown()){tetLockPiece();return;} TG.score++;TG.dropAcc=0;tetUpdateHUD();tetDrawBoard(); }
+function tetDoHardDrop(){ if(!TG.running||TG.paused||!TG.cur) return; const gy=tetGhostY(TG.cur,TG.board); TG.score+=(gy-TG.cur.y)*2;TG.cur.y=gy;tetUpdateHUD();tetLockPiece(); }
+function tetLockPiece(){
+  tetPlace(TG.cur,TG.board);
+  const cleared=tetSweep(TG.board);
+  if(cleared>0){ tetAddScore(cleared); tetPlayClear(cleared); evalTetMochi(cleared); tetSpawnParts(cleared*8); const fl=document.getElementById('tet-clear-flash'); fl.classList.add('flash'); setTimeout(()=>fl.classList.remove('flash'),180); }
+  else { tetPlayLock(); evalTetMochi(0); }
+  TG.cur=TG.nxt; TG.nxt=randTetPiece();
+  if(!tetValid(TG.cur.m,TG.cur.x,TG.cur.y,TG.board)){tetDrawBoard();tetGameOver();return;}
+  TG.dropAcc=0; tetDrawNext();
+  TG.raf=requestAnimationFrame(tetLoop);
+}
+
+// ── GAME CONTROL ──
+window.tetStart = function(){
+  ['tet-ov-start','tet-ov-pause','tet-ov-over'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  TG.board=mkTetBoard(); TG.score=0; TG.level=1; TG.lines=0;
+  TG.paused=false; TG.dropAcc=0; TG.lastTs=0;
+  TG.speed=TET_DIFF[TG.diff].ms; tetParts=[];
+  TG.keysDown=new Set(); TG.dasLeft=false; TG.dasRight=false; TG.dasTimer=0; TG.arrTimer=0;
+  _refillBag();
+  if(TG.raf) cancelAnimationFrame(TG.raf);
+  TG.cur=randTetPiece(); TG.nxt=randTetPiece(); TG.running=true;
+  tetUpdateHUD(); tetDrawNext();
+  setTetMochiState('calm','feliz 🌸');
+  document.getElementById('tet-pause-btn').textContent='⏸ Pausa';
+  TG.raf=requestAnimationFrame(tetLoop);
+};
+window.tetTogglePause = function(){
+  if(!TG.running) return;
+  TG.paused=!TG.paused;
+  document.getElementById('tet-ov-pause').classList.toggle('active',TG.paused);
+  document.getElementById('tet-pause-btn').textContent=TG.paused?'▶ Seguir':'⏸ Pausa';
+  if(TG.paused){if(TG.raf){cancelAnimationFrame(TG.raf);TG.raf=null;}}
+  else{TG.lastTs=0;TG.raf=requestAnimationFrame(tetLoop);}
+};
+window.tetGoMenu = function(){
+  TG.running=false; if(TG.raf){cancelAnimationFrame(TG.raf);TG.raf=null;}
+  TG.paused=false; TG.keysDown.clear(); TG.dasLeft=false; TG.dasRight=false;
+  ['tet-ov-start','tet-ov-pause','tet-ov-over'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById('tet-ov-start').classList.add('active');
+  document.getElementById('tet-pause-btn').textContent='⏸ Pausa';
+  document.getElementById('tet-hs-badge').textContent='récord: '+TG.hs.toLocaleString();
+};
+function tetGameOver(){
+  TG.running=false; if(TG.raf){cancelAnimationFrame(TG.raf);TG.raf=null;}
+  tetPlayOver();
+  const isHS=TG.score>TG.hs;
+  if(isHS){TG.hs=TG.score;localStorage.setItem('mochi_tet_hs',TG.score);}
+  const msgs=[['hasta acá llegamos','estuvo bien intentarlo\n¿otra vez?'],['no pasa nada 🌸','cada juego es diferente'],['fue bonito','volvamos a intentar 🌸']];
+  const pick=msgs[Math.floor(Math.random()*msgs.length)];
+  document.getElementById('tet-over-title').textContent=isHS?'¡nuevo récord! 🌸':pick[0];
+  document.getElementById('tet-over-sub').textContent=isHS?`¡${TG.score} puntos! sos increíble 💖`:pick[1];
+  document.getElementById('tet-over-score').textContent=TG.score.toLocaleString();
+  document.getElementById('tet-over-emoji').textContent=isHS?'🏆':'🌸';
+  document.getElementById('tet-ov-over').classList.add('active');
+  setTetMochiState('worried','hasta acá 🌸');
+}
+window.tetSetDiff = function(diff,btn){
+  TG.diff=diff; TG.speed=TET_DIFF[diff].ms;
+  document.querySelectorAll('.tet-diff-pill').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+};
+
+// ── KEYBOARD ──
+function bindTetKeys(){
+  document.addEventListener('keydown', e=>{
+    const zone=document.getElementById('tetris-zone');
+    if(!zone||!zone.classList.contains('open')) return;
+    TG.keysDown.add(e.key);
+    switch(e.key){
+      case 'ArrowLeft':  e.preventDefault(); if(!TG.dasLeft){TG.dasLeft=true;TG.dasTimer=0;TG.arrTimer=0;tetDoLeft();} break;
+      case 'ArrowRight': e.preventDefault(); if(!TG.dasRight){TG.dasRight=true;TG.dasTimer=0;TG.arrTimer=0;tetDoRight();} break;
+      case 'ArrowDown':  e.preventDefault(); tetDoSoftDrop(); break;
+      case 'ArrowUp': case 'z': case 'Z': e.preventDefault(); tetDoRotate(); break;
+      case ' ': e.preventDefault(); tetDoHardDrop(); break;
+      case 'Escape': case 'p': tetTogglePause(); break;
+    }
+  });
+  document.addEventListener('keyup', e=>{
+    TG.keysDown.delete(e.key);
+    if(e.key==='ArrowLeft'){TG.dasLeft=false;TG.dasTimer=0;TG.arrTimer=0;}
+    if(e.key==='ArrowRight'){TG.dasRight=false;TG.dasTimer=0;TG.arrTimer=0;}
+  });
+}
+
+// ── TOUCH / SWIPE ──
+function bindTetTouch(){
+  const cv=bCv;
+  let t0=0,x0=0,y0=0,lastCellDx=0,lastCellDy=0,isDragging=false;
+  function toLogical(touch){ const r=cv.getBoundingClientRect(); return {x:(touch.clientX-r.left)*(TET_COLS*TET_CELL/r.width),y:(touch.clientY-r.top)*(TET_ROWS*TET_CELL/r.height)}; }
+  function onStart(e){ e.preventDefault(); const pos=toLogical(e.touches?e.touches[0]:e); x0=pos.x;y0=pos.y;t0=Date.now();lastCellDx=0;lastCellDy=0;isDragging=false; }
+  function onMove(e){ e.preventDefault(); if(!TG.running||TG.paused) return; const pos=toLogical(e.touches?e.touches[0]:e); const dx=pos.x-x0,dy=pos.y-y0; if(Math.hypot(dx,dy)>10) isDragging=true; if(Math.abs(dx)>Math.abs(dy)){ const cd=Math.round(dx/TET_CELL),delta=cd-lastCellDx; if(delta>0) for(let i=0;i<delta;i++) tetDoRight(); else if(delta<0) for(let i=0;i<-delta;i++) tetDoLeft(); lastCellDx=cd; } else if(dy>0){ const cd=Math.floor(dy/TET_CELL),delta=cd-lastCellDy; if(delta>0) for(let i=0;i<delta;i++) tetDoSoftDrop(); lastCellDy=cd; } }
+  function onEnd(e){ e.preventDefault(); const dt=Date.now()-t0; const pos=toLogical(e.changedTouches?e.changedTouches[0]:e); const dist=Math.hypot(pos.x-x0,pos.y-y0); if(!isDragging&&dist<14&&dt<220) tetDoRotate(); isDragging=false; }
+  cv.addEventListener('touchstart',onStart,{passive:false});
+  cv.addEventListener('touchmove',onMove,{passive:false});
+  cv.addEventListener('touchend',onEnd,{passive:false});
+  let mdown=false;
+  cv.addEventListener('mousedown',e=>{mdown=true;onStart(e);});
+  cv.addEventListener('mousemove',e=>{if(mdown)onMove(e);});
+  cv.addEventListener('mouseup',e=>{if(mdown){mdown=false;onEnd(e);}});
+  cv.addEventListener('mouseleave',e=>{if(mdown)mdown=false;});
+}
+
+})(); // end IIFE
 </script>
 <script>
 if ('serviceWorker' in navigator) {
